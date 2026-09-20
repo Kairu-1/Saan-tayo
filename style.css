@@ -1,0 +1,336 @@
+/* =====================================================================
+   style.css  —  how the website LOOKS.
+
+   Try this: change a color in the :root block below, save, and refresh.
+   Every place that uses that color updates at once.
+
+   The colors come from Filipino flavors:
+     ube (purple), pandan (green), calamansi (yellow).
+   ===================================================================== */
+
+
+/* ---------- 1. DESIGN TOKENS (colors, fonts, sizes) ----------
+   "Custom properties" = variables for CSS. Use them with var(--name). */
+:root {
+  --ink:       #2A1F45;   /* deep ube: dark text + header background */
+  --ube:       #5B3F99;   /* restaurants accent */
+  --pandan:    #2E7D5B;   /* cafes accent */
+  --calamansi: #F5C542;   /* highlight color */
+  --paper:     #F8F7FB;   /* page background */
+  --white:     #FFFFFF;
+  --line:      #E2DDEE;   /* thin borders */
+  --muted:     #6B6485;   /* softer text */
+
+  --radius: 14px;
+
+  /* Fonts: first one that works is used. The rest are backups. */
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+
+/* ---------- 2. BASE / RESET ---------- */
+
+/* Makes width calculations sane: padding stays INSIDE the box size. */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;         /* 1rem = the user's default text size (usually 16px) */
+  line-height: 1.5;
+}
+
+/* Stops the page behind the pop-up from scrolling (script.js adds this class) */
+body.no-scroll { overflow: hidden; }
+
+/* .wrap keeps content from stretching too wide on big screens
+   and adds side padding on small screens. Used in header, main, footer. */
+.wrap {
+  width: min(100% - 2rem, 68rem);   /* 2rem of breathing room on each side */
+  margin-inline: auto;
+}
+
+/* Hidden visually, but still read by screen readers (used for the search label) */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Clear outline when navigating by keyboard. Good for accessibility. */
+:focus-visible {
+  outline: 3px solid var(--calamansi);
+  outline-offset: 2px;
+}
+
+
+/* ---------- 3. HEADER ---------- */
+.site-header {
+  background: var(--ink);
+  color: var(--white);
+  /* env(safe-area-inset-top) keeps the header clear of the iPhone notch */
+  padding: max(1.5rem, env(safe-area-inset-top)) 0 1.5rem;
+}
+
+.brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  /* clamp(min, ideal, max): grows with screen width but has limits */
+  font-size: clamp(2.25rem, 8vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--calamansi);
+}
+
+.tagline {
+  margin: 0.5rem 0 1.25rem;
+  max-width: 34rem;
+  color: #D9D2EE;
+}
+
+.search input {
+  width: 100%;
+  min-height: 48px;              /* comfortable for thumbs (44px+ is the guideline) */
+  padding: 0 1rem;
+  border: 2px solid transparent;
+  border-radius: 999px;          /* fully rounded ends */
+  font: inherit;
+  font-size: 1rem;               /* 16px+ stops iPhones zooming in when you tap the box */
+  color: var(--ink);
+  background: var(--white);
+}
+.search input:focus-visible { border-color: var(--calamansi); outline: none; }
+
+
+/* ---------- 4. FILTER BUTTONS ("chips") ---------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;               /* wraps to a new line if there's no room */
+  gap: 0.75rem 1.5rem;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.chip-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.chip {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.chip:hover { border-color: var(--ube); }
+
+/* The selected chip. script.js adds/removes the "is-active" class. */
+.chip.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
+.result-count { margin: 0 0 1rem; color: var(--muted); }
+
+
+/* ---------- 5. PLACE CARDS ---------- */
+
+/* Responsive grid with NO media queries needed:
+   "fit as many columns as possible, each at least 17rem wide".
+   Phone = 1 column, iPad = 2-3, laptop = 3. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+  padding-bottom: 2rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;              /* keeps the top color band inside the rounded corners */
+}
+
+/* The colored band on top of each card. The color depends on the type. */
+.card::before {
+  content: "";
+  height: 6px;
+  background: var(--card-accent);
+}
+.card[data-type="cafe"]       { --card-accent: var(--pandan); }
+.card[data-type="restaurant"] { --card-accent: var(--ube); }
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;                       /* stretch so all buttons line up at the bottom */
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.tag {
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: var(--card-accent);
+  color: var(--white);
+}
+.tag.sample { background: var(--calamansi); color: var(--ink); }
+
+.card h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  line-height: 1.2;
+}
+
+.card-area  { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+
+.card-desc {
+  margin: 0;
+  /* Cuts the description off after 3 lines with "..." */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.btn {
+  margin-top: auto;              /* pushes the button to the bottom of the card */
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--white);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn:hover { background: var(--ube); }
+
+.empty {
+  padding: 2rem 0 3rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+
+/* ---------- 6. THE MENU POP-UP ----------
+   The star of the site: it's styled like a printed menu, with dotted
+   lines linking each dish to its price. */
+
+.menu-dialog {
+  border: 0;
+  padding: 0;
+  width: min(100%, 36rem);
+  max-width: 100%;               /* overrides the browser's default side gaps on <dialog> */
+  max-height: 92vh;
+  max-height: 92dvh;             /* dvh = accounts for the phone's browser bar */
+  overflow-y: auto;              /* scroll inside the pop-up if the menu is long */
+  background: var(--white);
+  color: var(--ink);
+  /* On phones: slide up from the bottom like a sheet */
+  margin: auto auto 0;
+  border-radius: 20px 20px 0 0;
+}
+
+/* On iPad and larger: a normal centered pop-up */
+@media (min-width: 700px) {
+  .menu-dialog { margin: auto; border-radius: 20px; }
+}
+
+/* The dark see-through layer behind the pop-up */
+.menu-dialog::backdrop { background: rgba(42, 31, 69, 0.65); }
+
+/* Title bar stays visible while you scroll a long menu */
+.menu-top {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+}
+.menu-top h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.close-btn {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.close-btn:hover { border-color: var(--ink); }
+
+#menu-content { padding: 1rem 1.25rem 2rem; }
+
+.menu-meta { margin: 0 0 1.25rem; color: var(--muted); font-size: 0.9375rem; }
+.menu-meta p { margin: 0.15rem 0; }
+
+.menu-category {
+  margin: 1.5rem 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--ube);
+}
+
+.menu-items { list-style: none; margin: 0; padding: 0; }
+.menu-items li { padding: 0.5rem 0; }
+
+/* One dish row:  Name ........... ₱150  */
+.item-row { display: flex; align-items: baseline; gap: 0.5rem; }
+.item-name  { font-weight: 600; }
+
+/* The dotted line: it stretches to fill the space between name and price */
+.item-dots {
+  flex: 1;
+  border-bottom: 2px dotted #BDB5D6;   /* slightly darker than --line so it's visible */
+  transform: translateY(-0.25em);
+}
+
+.item-price { font-weight: 700; white-space: nowrap; color: var(--pandan); }
+
+.item-note { margin: 0.1rem 0 0; color: var(--muted); font-size: 0.875rem; }
+
+
+/* ---------- 7. FOOTER ---------- */
+.site-footer {
+  padding: 1.5rem 0 max(1.5rem, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.site-footer p { margin: 0; }
+
+
+/* ---------- 8. RESPECT "REDUCE MOTION" SETTINGS ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

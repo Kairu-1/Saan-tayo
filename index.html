@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- This line makes the site fit properly on phones and iPads.
+       Without it, phones show a tiny zoomed-out desktop page. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- The text shown in the browser tab and in Google results -->
+  <title>Saan Tayo? | Cafe and restaurant menus in Manila and Quezon City</title>
+  <meta name="description" content="Browse menus of cafes and restaurants in Manila and Quezon City.">
+
+  <!-- Colors the phone's browser bar to match the site header -->
+  <meta name="theme-color" content="#2A1F45">
+
+  <!-- Google Font for headings (needs internet). If it fails to load,
+       the browser falls back to a system font, so nothing breaks. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+
+  <!-- Our own styles (colors, layout) live in this file -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ============ HEADER: site name + search box ============ -->
+  <header class="site-header">
+    <div class="wrap">
+      <h1 class="brand">Saan Tayo?</h1>
+      <p class="tagline">Menus of cafes and restaurants in Manila and Quezon City.</p>
+
+      <!-- The search box. script.js listens to whatever gets typed here. -->
+      <label class="search">
+        <span class="sr-only">Search places, areas or dishes</span>
+        <input type="search" id="search" placeholder="Search a place, area, or dish" autocomplete="off">
+      </label>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- ============ FILTER BUTTONS ============
+         data-filter tells script.js WHICH filter the button controls.
+         data-value tells it WHAT to filter by. -->
+    <section class="filters" aria-label="Filters">
+      <div class="chip-group" role="group" aria-label="City">
+        <button class="chip is-active" data-filter="city" data-value="all" aria-pressed="true">All cities</button>
+        <button class="chip" data-filter="city" data-value="Quezon City" aria-pressed="false">Quezon City</button>
+        <button class="chip" data-filter="city" data-value="Manila" aria-pressed="false">Manila</button>
+      </div>
+
+      <div class="chip-group" role="group" aria-label="Type of place">
+        <button class="chip is-active" data-filter="type" data-value="all" aria-pressed="true">Everything</button>
+        <button class="chip" data-filter="type" data-value="cafe" aria-pressed="false">Cafes</button>
+        <button class="chip" data-filter="type" data-value="restaurant" aria-pressed="false">Restaurants</button>
+      </div>
+    </section>
+
+    <!-- Says "6 places" etc. aria-live makes screen readers announce changes -->
+    <p id="result-count" class="result-count" aria-live="polite"></p>
+
+    <!-- ============ PLACE CARDS ============
+         This div starts EMPTY. script.js fills it using data.js -->
+    <div id="place-list" class="grid"></div>
+
+    <!-- Shown when no place matches the search/filters -->
+    <p id="empty" class="empty" hidden>
+      No places match that. Try a different word or clear the filters.
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Prices and menus can change. Please confirm with the place before you go.</p>
+    </div>
+  </footer>
+
+  <!-- ============ MENU POP-UP ============
+       <dialog> is a built-in HTML pop-up. The browser handles the dark
+       backdrop, the Esc key, and keyboard focus for us. -->
+  <dialog id="menu-dialog" class="menu-dialog" aria-labelledby="menu-title">
+    <div class="menu-top">
+      <h2 id="menu-title"></h2>
+      <button type="button" id="close-menu" class="close-btn">Close</button>
+    </div>
+    <div id="menu-content"></div>
+  </dialog>
+
+  <!-- Order matters: data first, then the code that uses the data -->
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
