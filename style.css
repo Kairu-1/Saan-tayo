@@ -12,18 +12,17 @@
 /* ---------- 1. DESIGN TOKENS (colors, fonts, sizes) ----------
    "Custom properties" = variables for CSS. Use them with var(--name). */
 :root {
-  --ink:       #2A1F45;   /* deep ube: dark text + header background */
-  --ube:       #5B3F99;   /* restaurants accent */
-  --pandan:    #2E7D5B;   /* cafes accent */
-  --calamansi: #F5C542;   /* highlight color */
-  --paper:     #F8F7FB;   /* page background */
-  --white:     #FFFFFF;
-  --line:      #E2DDEE;   /* thin borders */
-  --muted:     #6B6485;   /* softer text */
+  --ink:       #3B2A20;   /* dark roasted brown: text + header background */
+  --ube:       #6F4E37;   /* medium coffee brown: restaurants accent */
+  --pandan:    #7A8B5D;   /* muted sage green: cafes accent */
+  --calamansi: #D9932F;   /* warm caramel: highlights, buttons on hover */
+  --paper:     #FAF4EA;   /* warm cream: page background */
+  --white:     #FFFDF9;   /* soft ivory instead of stark white */
+  --line:      #E6D9C6;   /* warm tan: thin borders */
+  --muted:     #8B7362;   /* soft brown-grey: secondary text */
 
   --radius: 14px;
 
-  /* Fonts: first one that works is used. The rest are backups. */
   --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -160,6 +159,18 @@ body.no-scroll { overflow: hidden; }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;              /* keeps the top color band inside the rounded corners */
+  animation: card-in 0.4s ease-out backwards;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* The colored band on top of each card. The color depends on the type. */
@@ -311,7 +322,7 @@ body.no-scroll { overflow: hidden; }
 /* The dotted line: it stretches to fill the space between name and price */
 .item-dots {
   flex: 1;
-  border-bottom: 2px dotted #BDB5D6;   /* slightly darker than --line so it's visible */
+  border-bottom: 2px dotted #D9C7B0;   /* warm tan dotted line */
   transform: translateY(-0.25em);
 }
 
