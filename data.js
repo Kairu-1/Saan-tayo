@@ -46,7 +46,7 @@ const PLACES = [
         category: "Coffee",
         items: [
           { name: "Spanish Latte", price: 165, note: "Iced or hot" },
-          { name: "Ube Latte", price: 180 },
+          { name: "Ube Latte", price: 200 },
           { name: "Americano", price: 120 }
         ]
       },
