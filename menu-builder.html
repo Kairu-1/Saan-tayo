@@ -3,539 +3,379 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Menu Builder — Saan Tayo?</title>
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex">
+<title>Menu Builder | Saan Tayo?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
-  /* Same warm coffee palette as the main site, kept simple since this
-     tool is only for you and your girlfriend to use while editing, not
-     something visitors ever see. */
+  /* Same palette as style.css on the main site */
   :root {
-    --ink: #3B2A20; --ube: #6F4E37; --pandan: #7A8B5D;
-    --calamansi: #D9932F; --paper: #FAF4EA; --white: #FFFDF9;
-    --line: #E6D9C6; --muted: #8B7362;
+    --darkbrown: #3B2418; --brown: #6B4A38; --pandan: #7A8B5D; --babyblue: #8EC5FF;
+    --paper: #F2E8DA; --white: #FBF6EE; --line: #DCCDB8; --muted: #7A6455; --danger: #A33B2E;
+    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--paper); color: var(--ink);
-    font-family: system-ui, -apple-system, sans-serif; line-height: 1.5;
-  }
-  .wrap { max-width: 44rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-  h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
-  .subtitle { color: var(--muted); margin-top: 0; }
-  .note {
-    background: #FFF7E8; border: 1px solid var(--calamansi);
-    border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem; margin-bottom: 1.5rem;
-  }
-  fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
-  legend { font-weight: 700; padding: 0 0.5rem; }
+  *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--paper); color: var(--darkbrown);
+         font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+  :focus-visible { outline: 3px solid var(--babyblue); outline-offset: 2px; }
+
+  header { background: var(--darkbrown); padding: max(1.25rem, env(safe-area-inset-top)) 0 1.25rem; }
+  .wrap { width: min(100% - 2rem, 44rem); margin-inline: auto; }
+  h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 2rem;
+       letter-spacing: -0.02em; color: var(--babyblue); }
+  header p { margin: 0.25rem 0 0; color: #E6DACB; font-size: 0.95rem; }
+  main { padding: 1.5rem 0 4rem; }
+
+  fieldset { border: 1px solid var(--line); border-radius: 14px; background: var(--white);
+             padding: 1rem; margin: 0 0 1rem; }
+  legend { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; padding: 0 0.5rem; }
   label { display: block; font-weight: 600; font-size: 0.9rem; margin: 0.75rem 0 0.25rem; }
-  label:first-child { margin-top: 0; }
-  input[type="text"], input[type="number"], textarea, select {
-    width: 100%; padding: 0.55rem 0.7rem; border: 1.5px solid var(--line);
-    border-radius: 8px; font: inherit; font-size: 0.95rem; background: var(--white); color: var(--ink);
-  }
-  textarea { resize: vertical; min-height: 3.5rem; }
-  .row { display: flex; gap: 0.75rem; }
+  fieldset > label:first-of-type, .row label { margin-top: 0; }
+  .row { display: flex; gap: 0.75rem; margin-top: 0.75rem; }
   .row > div { flex: 1; }
-  small.hint { color: var(--muted); display: block; margin-top: 0.2rem; }
 
-  .category-block {
-    border: 1px dashed var(--line); border-radius: 10px; padding: 0.75rem; margin-top: 0.75rem; background: var(--white);
+  input[type=text], input[type=email], input[type=password], input[type=number], textarea, select {
+    width: 100%; min-height: 44px; padding: 0.5rem 0.75rem; border: 1.5px solid var(--line);
+    border-radius: 10px; font: inherit; font-size: 1rem; background: #fff; color: var(--darkbrown);
   }
-  .item-row {
-    display: grid; grid-template-columns: 1fr 5.5rem 1fr auto; gap: 0.5rem; align-items: start; margin-top: 0.5rem;
-  }
-  .item-row input { margin: 0; }
+  textarea { min-height: 4.5rem; resize: vertical; }
+  .choice { display: flex; align-items: center; gap: 0.6rem; font-weight: 400; margin: 0.5rem 0 0; min-height: 44px; }
+  .choice input { width: 1.2rem; height: 1.2rem; accent-color: var(--darkbrown); }
 
-  button {
-    font: inherit; font-weight: 700; border: none; border-radius: 8px;
-    padding: 0.55rem 1rem; cursor: pointer;
-  }
-  .btn-primary { background: var(--ink); color: var(--white); }
-  .btn-primary:hover { background: var(--ube); }
-  .btn-add { background: var(--pandan); color: var(--white); margin-top: 0.75rem; }
-  .btn-remove { background: transparent; color: #A44; font-weight: 700; padding: 0.4rem 0.6rem; }
-  .btn-generate { background: var(--calamansi); color: var(--ink); font-size: 1.05rem; width: 100%; padding: 0.8rem; margin-top: 1rem; }
-  .btn-copy { background: var(--ink); color: var(--white); margin-top: 0.5rem; }
+  button { font: inherit; font-weight: 700; min-height: 44px; border: 0; border-radius: 10px;
+           padding: 0 1.1rem; cursor: pointer; }
+  .primary { background: var(--darkbrown); color: var(--white); }
+  .primary:hover { background: var(--brown); }
+  .primary:disabled { opacity: 0.6; cursor: wait; }
+  .secondary { background: var(--pandan); color: #fff; margin-top: 0.75rem; }
+  .big { width: 100%; font-size: 1.05rem; min-height: 52px; }
+  .link { background: transparent; color: var(--muted); border: 1.5px solid var(--line); font-weight: 600; }
+  .danger { color: var(--danger); }
 
-  #output-section { display: none; margin-top: 1.5rem; }
-  #output-section.visible { display: block; }
-  #code-output {
-    width: 100%; min-height: 16rem; font-family: "SF Mono", Consolas, monospace;
-    font-size: 0.85rem; background: var(--ink); color: #F3EADD; border-radius: 10px; padding: 1rem; border: none;
+  .category { border: 1px dashed var(--line); border-radius: 12px; padding: 0.75rem; margin-top: 0.75rem; }
+  .cat-head { display: flex; gap: 0.5rem; }
+  .dish { display: grid; grid-template-columns: 1fr 6.5rem auto; gap: 0.5rem; margin-top: 0.5rem; }
+  .dish .dish-note { grid-column: 1 / -1; grid-row: 2; }
+  @media (min-width: 640px) {
+    .dish { grid-template-columns: 1fr 6.5rem 1fr auto; }
+    .dish .dish-note { grid-column: auto; grid-row: auto; }
   }
-  .copied-msg { color: var(--pandan); font-weight: 700; font-size: 0.9rem; margin-left: 0.5rem; }
-  .error-msg { color: #A44; font-weight: 600; margin-top: 0.5rem; }
+
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+         margin-bottom: 1rem; color: var(--muted); font-size: 0.9rem; }
+  .msg { margin: 0.75rem 0 0; font-weight: 600; }
+  .msg.ok { color: #4D6B2E; } .msg.err { color: var(--danger); }
+  .hint { color: var(--muted); font-size: 0.875rem; margin: 0.25rem 0 0; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <h1>Menu Builder</h1>
-  <p class="subtitle">Fill this form, click Generate, then paste the result into <code>data.js</code>.</p>
-
-  <div class="note">
-    This page is a helper tool, not part of the live site. Nothing you type
-    here is sent anywhere — your file stays on your computer the whole time.
-    Load your current <code>data.js</code>, fill the form, and download the
-    updated file ready to drop back into your project.
+<header>
+  <div class="wrap">
+    <h1>Menu Builder</h1>
+    <p>Add places and menus straight to the live site.</p>
   </div>
+</header>
 
-  <fieldset id="load-section">
-    <legend>1. Load your current data.js</legend>
-    <label for="data-file">Choose your project's <code>data.js</code> file</label>
-    <div style="display:flex; gap:0.5rem; align-items:center;">
-      <input type="file" id="data-file" accept=".js" style="flex:1;">
-      <button type="button" class="btn-remove" id="clear-file-btn" style="display:none; white-space:nowrap; border:1.5px solid var(--line);">Undo / clear</button>
+<main class="wrap">
+
+  <!-- ============ SIGN IN ============ -->
+  <section id="login" hidden>
+    <form id="login-form">
+      <fieldset>
+        <legend>Sign in</legend>
+        <label for="email">Email</label>
+        <input type="email" id="email" autocomplete="username" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" required>
+        <button type="submit" class="primary" style="margin-top:1rem">Sign in</button>
+        <p id="login-msg" class="msg" role="status"></p>
+      </fieldset>
+    </form>
+  </section>
+
+  <!-- ============ BUILDER ============ -->
+  <section id="app" hidden>
+    <div class="bar">
+      <span>Signed in as <strong id="who"></strong></span>
+      <button type="button" id="signout" class="link">Sign out</button>
     </div>
-    <small class="hint" id="load-status">No file loaded yet — load it first, since both options below need to know what's already in your file.</small>
-  </fieldset>
-
-  <fieldset id="mode-section">
-    <legend>2. What do you want to do?</legend>
-    <label style="display:flex; align-items:center; gap:0.5rem; font-weight:400;">
-      <input type="radio" name="mode" id="mode-new" value="new" checked style="width:auto;">
-      Add a brand-new place
-    </label>
-    <label style="display:flex; align-items:center; gap:0.5rem; font-weight:400; margin-top:0.5rem;">
-      <input type="radio" name="mode" id="mode-existing" value="existing" style="width:auto;">
-      Add a new menu / category to a place that's already in the file
-    </label>
-
-    <div id="existing-place-picker" style="display:none; margin-top:0.75rem;">
-      <label for="existing-place-select">Which place?</label>
-      <select id="existing-place-select"></select>
-    </div>
-  </fieldset>
-
-  <form id="builder-form">
-
-    <fieldset id="place-details">
-      <legend>3. Place details</legend>
-
-      <label for="name">Place name</label>
-      <input type="text" id="name" required placeholder="e.g. Cafe Juanita">
-
-      <div class="row">
-        <div>
-          <label for="type">Type</label>
-          <select id="type">
-            <option value="cafe">Cafe</option>
-            <option value="restaurant">Restaurant</option>
-          </select>
-        </div>
-        <div>
-          <label for="city">City</label>
-          <select id="city">
-            <option value="Quezon City">Quezon City</option>
-            <option value="Manila">Manila</option>
-          </select>
-        </div>
-      </div>
-
-      <label for="area">Area / neighborhood</label>
-      <input type="text" id="area" required placeholder="e.g. Maginhawa, Teachers Village">
-
-      <label for="hours">Hours</label>
-      <input type="text" id="hours" required placeholder="e.g. 8:00 AM – 10:00 PM">
-
-      <label for="description">Short description (1–2 sentences)</label>
-      <textarea id="description" required placeholder="What makes this place worth visiting?"></textarea>
-
-      <label for="updated">Prices last checked</label>
-      <input type="text" id="updated" placeholder="e.g. October 2026">
-    </fieldset>
 
     <fieldset>
-      <legend id="menu-legend">4. Menu</legend>
-      <div id="categories"></div>
-      <button type="button" class="btn-add" id="add-category">+ Add category</button>
+      <legend>What are you adding?</legend>
+      <label class="choice"><input type="radio" name="mode" id="mode-new" checked> A new place</label>
+      <label class="choice"><input type="radio" name="mode" id="mode-existing"> New categories for a place that’s already on the site</label>
+      <div id="existing-picker" hidden>
+        <label for="existing-place">Which place?</label>
+        <select id="existing-place"></select>
+      </div>
     </fieldset>
 
-    <button type="button" class="btn-generate" id="generate">5. Build the update</button>
-    <p class="error-msg" id="error-msg" hidden></p>
-  </form>
+    <form id="builder-form">
+      <fieldset id="place-details">
+        <legend>Place details</legend>
+        <label for="name">Place name</label>
+        <input type="text" id="name" placeholder="e.g. Cafe Juanita">
 
-  <div id="output-section">
-    <p id="download-status"></p>
-    <button type="button" class="btn-copy" id="download-btn">Download updated data.js</button>
-    <p class="hint" style="margin-top:0.75rem;">
-      Save it into your <code>saan-tayo</code> folder, replacing the old <code>data.js</code>
-      (your file manager will ask to confirm). Then check it with Live Server, commit, and push as usual.
-    </p>
-    <details style="margin-top:1rem;">
-      <summary style="cursor:pointer; font-weight:600;">Show the raw code instead</summary>
-      <textarea id="code-output" readonly style="margin-top:0.5rem;"></textarea>
-      <button type="button" class="btn-copy" id="copy-btn" style="margin-top:0.5rem;">Copy just the new block</button>
-      <span class="copied-msg" id="copied-msg" hidden>Copied!</span>
-    </details>
-  </div>
+        <div class="row">
+          <div>
+            <label for="type">Type</label>
+            <select id="type"><option value="cafe">Cafe</option><option value="restaurant">Restaurant</option></select>
+          </div>
+          <div>
+            <label for="city">City</label>
+            <select id="city"><option>Quezon City</option><option>Manila</option></select>
+          </div>
+        </div>
 
-</div>
+        <label for="area">Area or neighborhood</label>
+        <input type="text" id="area" placeholder="e.g. Maginhawa, Teachers Village">
+        <label for="hours">Hours</label>
+        <input type="text" id="hours" placeholder="e.g. 8:00 AM – 10:00 PM">
+        <label for="description">Short description (1–2 sentences)</label>
+        <textarea id="description" placeholder="What makes this place worth visiting?"></textarea>
+        <label for="updated">Prices last checked</label>
+        <input type="text" id="updated" placeholder="e.g. November 2026">
+      </fieldset>
 
+      <fieldset>
+        <legend id="menu-legend">Menu</legend>
+        <div id="categories"></div>
+        <button type="button" class="secondary" id="add-category">Add category</button>
+      </fieldset>
+
+      <button type="submit" class="primary big" id="save">Save to site</button>
+      <p id="save-msg" class="msg" role="status"></p>
+    </form>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-/* =====================================================================
-   How this works, in plain terms:
-   1. "Add category" and "Add dish" build more form fields on the fly.
-   2. "Generate code" reads every field and assembles a JS object,
-      matching the exact shape data.js expects (see data.js's own
-      comments for that shape).
-   3. The result goes into a read-only textarea you copy from.
-   No data ever leaves this page — there's no server involved.
-   ===================================================================== */
+/* Same publishable key as the live site. It can only READ.
+   Writing works only after you sign in, because of the owner-only
+   policies in Supabase. NEVER paste the secret key here. */
+const db = supabase.createClient(
+  "https://uaqzqotirikxzuebdfne.supabase.co",
+  "sb_publishable_-8g6F5S2YExB8W2bFWQyFw_3GNvuinP"
+);
 
-const categoriesDiv = document.getElementById("categories");
-let categoryCount = 0;
+const $ = (id) => document.getElementById(id);
+let places = [];
 
-/* ---------- Loading the existing data.js ----------
-   We don't run the file as code (that would need a sandbox to do safely).
-   Instead we treat it as plain text: we find the LAST "];" in the file,
-   which closes the PLACES array, and that's where new entries get
-   inserted. This also means any comments in your file are left untouched. */
+function setMsg(id, text, isError) {
+  const el = $(id);
+  el.textContent = text;
+  el.className = "msg" + (text ? (isError ? " err" : " ok") : "");
+}
 
-let loadedFileText = null;   // the full text of data.js, once loaded
-let existingIds = [];        // ids already in use, so we can warn on collisions
-let existingPlaces = [];     // [{id, name}] for the "existing place" dropdown
+const slugify = (t) => t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  .replace(/&/g, " and ").replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
-document.getElementById("data-file").addEventListener("change", async (event) => {
-  const file = event.target.files[0];
-  const status = document.getElementById("load-status");
-  if (!file) return;
 
-  loadedFileText = await file.text();
+/* ---------- Sign in / out ---------- */
+async function refreshSession() {
+  const { data } = await db.auth.getSession();
+  const session = data.session;
+  $("login").hidden = !!session;
+  $("app").hidden = !session;
+  $("who").textContent = session ? session.user.email : "";
+  if (session) await loadPlaces();
+}
 
-  // Pull out every id: "..." so we can warn about duplicates later
-  existingIds = [...loadedFileText.matchAll(/id:\s*"([^"]+)"/g)].map((m) => m[1]);
-
-  // Pull out id+name pairs. Rather than assuming they sit on exactly two
-  // adjacent lines (which breaks if you've hand-edited the file and the
-  // spacing shifted), we find every "id:" and every "name:" separately,
-  // then pair each id with the nearest "name:" that comes after it but
-  // before the next "id:" — i.e. the name belonging to that same place.
-  const idMatches = [...loadedFileText.matchAll(/id:\s*"([^"]+)"/g)];
-  const nameMatches = [...loadedFileText.matchAll(/name:\s*"([^"]+)"/g)];
-
-  existingPlaces = idMatches.map((idMatch, i) => {
-    const rangeEnd = i + 1 < idMatches.length ? idMatches[i + 1].index : Infinity;
-    const nameMatch = nameMatches.find((nm) => nm.index > idMatch.index && nm.index < rangeEnd);
-    return { id: idMatch[1], name: nameMatch ? nameMatch[1] : idMatch[1] };
+$("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setMsg("login-msg", "");
+  const { error } = await db.auth.signInWithPassword({
+    email: $("email").value.trim(), password: $("password").value
   });
-
-  const closingIndex = loadedFileText.lastIndexOf("];");
-  if (closingIndex === -1) {
-    status.textContent = "⚠ This doesn't look like a data.js file (no closing \"];\" found). Try re-downloading a fresh copy from your project.";
-    loadedFileText = null;
-    return;
-  }
-
-  status.textContent = `Loaded "${file.name}" — found ${existingIds.length} existing place${existingIds.length === 1 ? "" : "s"}.`;
-
-  // Fill the dropdown
-  const select = document.getElementById("existing-place-select");
-  select.innerHTML = existingPlaces
-    .map((p) => `<option value="${p.id}">${p.name.replace(/"/g, "&quot;")}</option>`)
-    .join("");
-
-  document.getElementById("mode-existing").disabled = existingPlaces.length === 0;
-  document.getElementById("clear-file-btn").style.display = "inline-block";
+  if (error) return setMsg("login-msg", "Couldn’t sign in: " + error.message, true);
+  $("password").value = "";
+  refreshSession();
 });
 
-// Undoes the file load: clears everything back to a blank-slate state,
-// as if you'd just opened this page. Doesn't touch anything on your
-// computer — it only forgets what's currently sitting in the browser tab.
-document.getElementById("clear-file-btn").addEventListener("click", () => {
-  loadedFileText = null;
-  existingIds = [];
-  existingPlaces = [];
+$("signout").addEventListener("click", async () => { await db.auth.signOut(); refreshSession(); });
 
-  document.getElementById("data-file").value = "";
-  document.getElementById("load-status").textContent = "No file loaded yet — load it first, since both options below need to know what's already in your file.";
-  document.getElementById("clear-file-btn").style.display = "none";
-  document.getElementById("existing-place-select").innerHTML = "";
 
-  // Existing-place mode is meaningless with no file loaded, so bounce back to "new place"
-  document.getElementById("mode-existing").checked = false;
-  document.getElementById("mode-existing").disabled = true;
-  document.getElementById("mode-new").checked = true;
-  updateModeUI();
-
-  // Hide any previously generated output, since it referred to the old file
-  document.getElementById("output-section").classList.remove("visible");
-  document.getElementById("download-btn").disabled = true;
-  document.getElementById("download-btn").dataset.filetext = "";
-});
-
-/* ---------- Switching between "new place" and "existing place" ---------- */
-function updateModeUI() {
-  const isExisting = document.getElementById("mode-existing").checked;
-  document.getElementById("place-details").style.display = isExisting ? "none" : "block";
-  document.getElementById("existing-place-picker").style.display = isExisting ? "block" : "none";
-  document.getElementById("menu-legend").textContent = isExisting
-    ? "4. New categories to add"
-    : "4. Menu";
-  document.getElementById("generate").textContent = isExisting
-    ? "5. Build the update"
-    : "5. Build the update";
-}
-document.getElementById("mode-new").addEventListener("change", updateModeUI);
-document.getElementById("mode-existing").addEventListener("change", updateModeUI);
-
-// Finds the ']' that closes the '[' at openIndex, tracking nested
-// brackets and skipping over anything inside quotes (so a note like
-// "Try the [seasonal] special" doesn't throw off the count).
-function findMatchingClose(text, openIndex) {
-  let depth = 0;
-  let inString = false;
-  let stringChar = "";
-  for (let i = openIndex; i < text.length; i++) {
-    const ch = text[i];
-    if (inString) {
-      if (ch === "\\") { i++; continue; }
-      if (ch === stringChar) inString = false;
-      continue;
-    }
-    if (ch === '"' || ch === "'" || ch === "`") { inString = true; stringChar = ch; continue; }
-    if (ch === "[") depth++;
-    else if (ch === "]") { depth--; if (depth === 0) return i; }
-  }
-  return -1;
+/* ---------- Existing places (for the dropdown + slug checks) ---------- */
+async function loadPlaces() {
+  const { data, error } = await db.from("places").select("id, slug, name, city").order("name");
+  if (error) return setMsg("save-msg", "Couldn’t load places: " + error.message, true);
+  places = data;
+  const select = $("existing-place");
+  select.replaceChildren(...places.map((p) => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name + " (" + p.city + ")";
+    return opt;
+  }));
 }
 
-// Adds one category block (a heading like "Coffee" + a list of dishes)
-function addCategory() {
-  categoryCount++;
-  const block = document.createElement("div");
-  block.className = "category-block";
-  block.innerHTML = `
-    <label>Category name</label>
-    <input type="text" class="category-name" placeholder="e.g. Coffee, Mains, Desserts">
-    <div class="items"></div>
-    <button type="button" class="btn-add btn-add-item" style="margin-top:0.5rem;">+ Add dish</button>
-    <button type="button" class="btn-remove btn-remove-category">Remove this category</button>
-  `;
-  categoriesDiv.appendChild(block);
 
-  block.querySelector(".btn-add-item").addEventListener("click", () => addItem(block.querySelector(".items")));
-  block.querySelector(".btn-remove-category").addEventListener("click", () => block.remove());
-
-  addItem(block.querySelector(".items")); // start with one dish row
+/* ---------- Mode switch ---------- */
+function updateMode() {
+  const existing = $("mode-existing").checked;
+  $("existing-picker").hidden = !existing;
+  $("place-details").hidden = existing;
+  $("menu-legend").textContent = existing ? "New categories" : "Menu";
 }
+$("mode-new").addEventListener("change", updateMode);
+$("mode-existing").addEventListener("change", updateMode);
 
-// Adds one dish row (name, price, optional note) inside a category
-function addItem(itemsContainer) {
+
+/* ---------- Category and dish fields ---------- */
+function addDish(block) {
   const row = document.createElement("div");
-  row.className = "item-row";
+  row.className = "dish";
   row.innerHTML = `
-    <input type="text" class="item-name" placeholder="Dish name">
-    <input type="number" class="item-price" placeholder="Price" min="0" step="1">
-    <input type="text" class="item-note" placeholder="Note (optional)">
-    <button type="button" class="btn-remove">✕</button>
-  `;
-  itemsContainer.appendChild(row);
-  row.querySelector(".btn-remove").addEventListener("click", () => row.remove());
+    <input type="text" class="dish-name" placeholder="Dish name" aria-label="Dish name">
+    <input type="number" class="dish-price" placeholder="Price" min="0" step="any" inputmode="decimal" aria-label="Price in pesos">
+    <input type="text" class="dish-note" placeholder="Note (optional)" aria-label="Note">
+    <button type="button" class="link danger remove-dish" aria-label="Remove dish">✕</button>`;
+  block.querySelector(".dishes").appendChild(row);
 }
 
-document.getElementById("add-category").addEventListener("click", addCategory);
-addCategory(); // start the form with one category already visible
-
-// Turns "Cafe Juanita" into "cafe-juanita" for the id field,
-// matching the style used in data.js.
-function slugify(text) {
-  return text.toLowerCase().trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-");
+function addCategory() {
+  const block = document.createElement("div");
+  block.className = "category";
+  block.innerHTML = `
+    <div class="cat-head">
+      <input type="text" class="cat-name" placeholder="Category, e.g. Coffee" aria-label="Category name">
+      <button type="button" class="link danger remove-cat">Remove</button>
+    </div>
+    <div class="dishes"></div>
+    <button type="button" class="secondary add-dish">Add dish</button>`;
+  $("categories").appendChild(block);
+  addDish(block);
 }
 
-// Wraps a string in quotes and escapes any quotes already inside it,
-// so a name like "Kuya's Grill" doesn't break the generated code.
-function quote(text) {
-  return JSON.stringify(text);
-}
+$("add-category").addEventListener("click", addCategory);
+$("categories").addEventListener("click", (e) => {
+  const block = e.target.closest(".category");
+  if (!block) return;
+  if (e.target.closest(".add-dish")) addDish(block);
+  if (e.target.closest(".remove-dish")) e.target.closest(".dish").remove();
+  if (e.target.closest(".remove-cat")) block.remove();
+});
 
-document.getElementById("generate").addEventListener("click", () => {
-  const errorMsg = document.getElementById("error-msg");
-  errorMsg.hidden = true;
-
-  const isExisting = document.getElementById("mode-existing").checked;
-
-  // ---------- Read the menu categories/dishes (shared by both modes) ----------
-  const categoryBlocks = document.querySelectorAll(".category-block");
-  const menuParts = [];
-
-  categoryBlocks.forEach((block) => {
-    const categoryName = block.querySelector(".category-name").value.trim();
-    if (!categoryName) return; // skip empty categories
-
-    const itemRows = block.querySelectorAll(".item-row");
-    const itemParts = [];
-
-    itemRows.forEach((row) => {
-      const itemName = row.querySelector(".item-name").value.trim();
-      const priceVal = row.querySelector(".item-price").value.trim();
-      const note = row.querySelector(".item-note").value.trim();
-      if (!itemName || priceVal === "") return; // skip incomplete dishes
-
-      let itemCode = `        { name: ${quote(itemName)}, price: ${Number(priceVal)}`;
-      if (note) itemCode += `, note: ${quote(note)}`;
-      itemCode += " }";
-      itemParts.push(itemCode);
+// Reads the form into [{ name, items: [{ name, price, note }] }], skipping incomplete rows.
+function readMenu() {
+  const menu = [];
+  document.querySelectorAll(".category").forEach((block) => {
+    const name = block.querySelector(".cat-name").value.trim();
+    const items = [];
+    block.querySelectorAll(".dish").forEach((row) => {
+      const n = row.querySelector(".dish-name").value.trim();
+      const p = row.querySelector(".dish-price").value.trim();
+      const note = row.querySelector(".dish-note").value.trim();
+      if (n && p !== "" && Number(p) >= 0) items.push({ name: n, price: Number(p), note: note || null });
     });
-
-    if (itemParts.length === 0) return; // skip categories with no valid dishes
-
-    menuParts.push(
-      `      {\n        category: ${quote(categoryName)},\n        items: [\n${itemParts.join(",\n")}\n        ]\n      }`
-    );
+    if (name && items.length) menu.push({ name, items });
   });
+  return menu;
+}
 
-  if (menuParts.length === 0) {
-    errorMsg.textContent = "Add at least one category with at least one dish (name + price).";
-    errorMsg.hidden = false;
-    return;
-  }
 
-  const downloadBtn = document.getElementById("download-btn");
-  const downloadStatus = document.getElementById("download-status");
+/* ---------- Save ---------- */
+$("builder-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setMsg("save-msg", "");
 
-  /* ============ MODE: add categories to an existing place ============ */
-  if (isExisting) {
-    if (!loadedFileText) {
-      errorMsg.textContent = "Load your data.js file first — this mode needs to find the place inside it.";
-      errorMsg.hidden = false;
-      return;
-    }
+  const menu = readMenu();
+  if (!menu.length) return setMsg("save-msg", "Add at least one category with one dish (name and price).", true);
 
-    const placeId = document.getElementById("existing-place-select").value;
-    const place = existingPlaces.find((p) => p.id === placeId);
+  const existing = $("mode-existing").checked;
+  let placeRow = null;
 
-    // Find this place's "id:" the same tolerant way we parsed it above —
-    // not assuming a specific amount of space after the colon.
-    const escapedId = placeId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const idPattern = new RegExp(`id:\\s*"${escapedId}"`);
-    const idFound = idPattern.exec(loadedFileText);
-    const idIndex = idFound ? idFound.index : -1;
-    const menuKeyIndex = idIndex === -1 ? -1 : loadedFileText.indexOf("menu:", idIndex);
-    const openBracket = menuKeyIndex === -1 ? -1 : loadedFileText.indexOf("[", menuKeyIndex);
-    const closeBracket = openBracket === -1 ? -1 : findMatchingClose(loadedFileText, openBracket);
-
-    if (idIndex === -1 || openBracket === -1 || closeBracket === -1) {
-      errorMsg.textContent = "Couldn't find that place's menu in the file — it may have been edited by hand in a way this tool doesn't expect. You can still copy the raw code below and paste it manually.";
-      errorMsg.hidden = false;
-    }
-
-    const newCategoriesCode = menuParts.join(",\n");
-    document.getElementById("code-output").value = newCategoriesCode;
-    document.getElementById("output-section").classList.add("visible");
-    document.getElementById("output-section").scrollIntoView({ behavior: "smooth", block: "start" });
-
-    if (idIndex === -1 || openBracket === -1 || closeBracket === -1) {
-      downloadBtn.disabled = true;
-      downloadStatus.textContent = "";
-      return;
-    }
-
-    let before = loadedFileText.slice(0, closeBracket).replace(/\s+$/, "");
-    const after = loadedFileText.slice(closeBracket); // starts with the "]" that closes menu: [ ... ]
-    if (!before.endsWith(",") && !before.endsWith("[")) before += ",";
-
-    const mergedFile = `${before}\n${newCategoriesCode}\n      ${after}`;
-    downloadBtn.dataset.filetext = mergedFile;
-    downloadBtn.disabled = false;
-    downloadStatus.textContent = `Ready — ${menuParts.length} new categor${menuParts.length === 1 ? "y" : "ies"} will be added to "${place.name}"'s menu.`;
-    return;
-  }
-
-  /* ============ MODE: add a brand-new place ============ */
-  const name = document.getElementById("name").value.trim();
-  const area = document.getElementById("area").value.trim();
-  const hours = document.getElementById("hours").value.trim();
-  const description = document.getElementById("description").value.trim();
-  const updated = document.getElementById("updated").value.trim() || "Not yet checked";
-
-  if (!name || !area || !hours || !description) {
-    errorMsg.textContent = "Please fill in name, area, hours and description first.";
-    errorMsg.hidden = false;
-    return;
-  }
-
-  const type = document.getElementById("type").value;
-  const city = document.getElementById("city").value;
-  let id = slugify(name);
-
-  // If this id is already used, make it unique instead of silently
-  // colliding with an existing place (which would make script.js
-  // open the wrong menu when the card is clicked).
-  if (existingIds.includes(id)) {
-    let suffix = 2;
-    while (existingIds.includes(`${id}-${suffix}`)) suffix++;
-    id = `${id}-${suffix}`;
-  }
-
-  const code = `  {
-    id: ${quote(id)},
-    name: ${quote(name)},
-    type: ${quote(type)},
-    city: ${quote(city)},
-    area: ${quote(area)},
-    hours: ${quote(hours)},
-    description: ${quote(description)},
-    updated: ${quote(updated)},
-    menu: [
-${menuParts.join(",\n")}
-    ]
-  }`;
-
-  document.getElementById("code-output").value = code;
-  document.getElementById("output-section").classList.add("visible");
-  document.getElementById("output-section").scrollIntoView({ behavior: "smooth", block: "start" });
-
-  if (loadedFileText) {
-    // Splice the new block in right before the final "];",
-    // adding a comma after whatever entry currently comes last.
-    const closingIndex = loadedFileText.lastIndexOf("];");
-    let before = loadedFileText.slice(0, closingIndex).replace(/\s+$/, "");
-    const after = loadedFileText.slice(closingIndex);
-
-    if (!before.endsWith(",") && !before.endsWith("[")) {
-      before += ",";
-    }
-
-    const mergedFile = `${before}\n\n${code}\n\n${after}`;
-    downloadBtn.dataset.filetext = mergedFile;
-    downloadBtn.disabled = false;
-    downloadStatus.textContent = `Ready — "${name}" will be added to your loaded file as a new entry (id: "${id}").`;
+  if (existing) {
+    if (!$("existing-place").value) return setMsg("save-msg", "There are no places to add to yet.", true);
   } else {
-    downloadBtn.disabled = true;
-    downloadStatus.textContent = "No data.js was loaded, so there's nothing to download yet. Load your file at the top of the page, or copy the raw code below instead.";
+    const f = {
+      name: $("name").value.trim(), area: $("area").value.trim(),
+      hours: $("hours").value.trim(), description: $("description").value.trim()
+    };
+    if (!f.name || !f.area || !f.hours || !f.description) {
+      return setMsg("save-msg", "Fill in the name, area, hours and description first.", true);
+    }
+    let slug = slugify(f.name);
+    if (!slug) return setMsg("save-msg", "The place name needs some letters or numbers.", true);
+    const taken = places.map((p) => p.slug);
+    const base = slug;
+    for (let n = 2; taken.includes(slug); n++) slug = base + "-" + n;
+
+    placeRow = {
+      slug, name: f.name, type: $("type").value, city: $("city").value, area: f.area,
+      hours: f.hours, description: f.description,
+      updated: $("updated").value.trim() || "Not yet checked", is_sample: false
+    };
   }
-});
 
-document.getElementById("download-btn").addEventListener("click", () => {
-  const fileText = document.getElementById("download-btn").dataset.filetext;
-  if (!fileText) return;
+  const btn = $("save");
+  btn.disabled = true; btn.textContent = "Saving…";
+  let newPlaceId = null;
+  const newCategoryIds = [];
 
-  const blob = new Blob([fileText], { type: "text/javascript" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "data.js";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById("copy-btn").addEventListener("click", async () => {
-  const textarea = document.getElementById("code-output");
-  textarea.select();
   try {
-    await navigator.clipboard.writeText(textarea.value);
-  } catch (e) {
-    document.execCommand("copy"); // fallback for older browsers
+    let placeId, startOrder = 0;
+
+    if (existing) {
+      placeId = $("existing-place").value;
+      const { data, error } = await db.from("menu_categories").select("sort_order")
+        .eq("place_id", placeId).order("sort_order", { ascending: false }).limit(1);
+      if (error) throw error;
+      startOrder = data.length ? data[0].sort_order : 0;
+    } else {
+      const { data, error } = await db.from("places").insert(placeRow).select("id").single();
+      if (error) throw error;
+      placeId = newPlaceId = data.id;
+    }
+
+    for (let i = 0; i < menu.length; i++) {
+      const cat = menu[i];
+      const { data, error } = await db.from("menu_categories")
+        .insert({ place_id: placeId, name: cat.name, sort_order: startOrder + i + 1 })
+        .select("id").single();
+      if (error) throw error;
+      newCategoryIds.push(data.id);
+
+      const rows = cat.items.map((it, j) => ({
+        category_id: data.id, name: it.name, price: it.price, note: it.note, sort_order: j + 1
+      }));
+      const { error: itemsError } = await db.from("menu_items").insert(rows);
+      if (itemsError) throw itemsError;
+    }
+
+    const label = existing ? $("existing-place").selectedOptions[0].textContent : placeRow.name;
+    setMsg("save-msg", "Saved to “" + label + "”. Refresh the live site to see it.");
+
+    // Reset the form, ready for the next one
+    ["name", "area", "hours", "description", "updated"].forEach((id) => { $(id).value = ""; });
+    $("categories").replaceChildren();
+    addCategory();
+    await loadPlaces();
+
+  } catch (err) {
+    // Undo whatever got created so a half-saved place never shows up on the site.
+    // (Deleting a place also deletes its categories and dishes.)
+    if (newPlaceId) await db.from("places").delete().eq("id", newPlaceId);
+    else if (newCategoryIds.length) await db.from("menu_categories").delete().in("id", newCategoryIds);
+    setMsg("save-msg", "Nothing was saved. " + (err.message || "Unknown error") +
+      " (Open DevTools > Console for details.)", true);
+    console.error(err);
+  } finally {
+    btn.disabled = false; btn.textContent = "Save to site";
   }
-  const msg = document.getElementById("copied-msg");
-  msg.hidden = false;
-  setTimeout(() => { msg.hidden = true; }, 1500);
 });
+
+
+/* ---------- Start ---------- */
+addCategory();
+updateMode();
+refreshSession();
 </script>
 </body>
 </html>
