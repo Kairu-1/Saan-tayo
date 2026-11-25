@@ -12,14 +12,14 @@
 /* ---------- 1. DESIGN TOKENS (colors, fonts, sizes) ----------
    "Custom properties" = variables for CSS. Use them with var(--name). */
 :root {
-  --ink:       #3B2A20;   /* dark roasted brown: text + header background */
-  --ube:       #6F4E37;   /* medium coffee brown: restaurants accent */
-  --pandan:    #7A8B5D;   /* muted sage green: cafes accent */
-  --calamansi: #D9932F;   /* warm caramel: highlights, buttons on hover */
-  --paper:     #FAF4EA;   /* warm cream: page background */
-  --white:     #FFFDF9;   /* soft ivory instead of stark white */
-  --line:      #E6D9C6;   /* warm tan: thin borders */
-  --muted:     #8B7362;   /* soft brown-grey: secondary text */
+  --darkbrown:       #3B2418;   /* your brown: text + header background */
+  --brown:       #6B4A38;   /* medium brown: restaurant accent, hover */
+  --pandan:    #7A8B5D;   /* sage green: cafe accent (unchanged) */
+  --babyblue: #8EC5FF;   /* your baby blue: highlights, title, focus ring */
+  --paper:     #F2E8DA;   /* your cream: page background */
+  --white:     #FBF6EE;   /* lighter cream for cards, so they stand out from the page */
+  --line:      #DCCDB8;   /* tan borders */
+  --muted:     #7A6455;   /* soft brown-grey for secondary text */
 
   --radius: 14px;
 
@@ -36,7 +36,7 @@
 body {
   margin: 0;
   background: var(--paper);
-  color: var(--ink);
+  color: var(--darkbrown);
   font-family: var(--font-body);
   font-size: 1rem;         /* 1rem = the user's default text size (usually 16px) */
   line-height: 1.5;
@@ -63,14 +63,14 @@ body.no-scroll { overflow: hidden; }
 
 /* Clear outline when navigating by keyboard. Good for accessibility. */
 :focus-visible {
-  outline: 3px solid var(--calamansi);
+  outline: 3px solid var(--babyblue);
   outline-offset: 2px;
 }
 
 
 /* ---------- 3. HEADER ---------- */
 .site-header {
-  background: var(--ink);
+  background: var(--darkbrown);
   color: var(--white);
   /* env(safe-area-inset-top) keeps the header clear of the iPhone notch */
   padding: max(1.5rem, env(safe-area-inset-top)) 0 1.5rem;
@@ -84,7 +84,7 @@ body.no-scroll { overflow: hidden; }
   font-size: clamp(2.25rem, 8vw, 3.75rem);
   line-height: 1.05;
   letter-spacing: -0.02em;
-  color: var(--calamansi);
+  color: var(--babyblue);
 }
 
 .tagline {
@@ -101,10 +101,10 @@ body.no-scroll { overflow: hidden; }
   border-radius: 999px;          /* fully rounded ends */
   font: inherit;
   font-size: 1rem;               /* 16px+ stops iPhones zooming in when you tap the box */
-  color: var(--ink);
+  color: var(--darkbrown);
   background: var(--white);
 }
-.search input:focus-visible { border-color: var(--calamansi); outline: none; }
+.search input:focus-visible { border-color: var(--babyblue); outline: none; }
 
 
 /* ---------- 4. FILTER BUTTONS ("chips") ---------- */
@@ -123,17 +123,17 @@ body.no-scroll { overflow: hidden; }
   border: 1.5px solid var(--line);
   border-radius: 999px;
   background: var(--white);
-  color: var(--ink);
+  color: var(--darkbrown);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
 }
-.chip:hover { border-color: var(--ube); }
+.chip:hover { border-color: var(--brown); }
 
 /* The selected chip. script.js adds/removes the "is-active" class. */
 .chip.is-active {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--darkbrown);
+  border-color: var(--darkbrown);
   color: var(--white);
 }
 
@@ -180,7 +180,7 @@ body.no-scroll { overflow: hidden; }
   background: var(--card-accent);
 }
 .card[data-type="cafe"]       { --card-accent: var(--pandan); }
-.card[data-type="restaurant"] { --card-accent: var(--ube); }
+.card[data-type="restaurant"] { --card-accent: var(--brown); }
 
 .card-body {
   display: flex;
@@ -200,7 +200,7 @@ body.no-scroll { overflow: hidden; }
   background: var(--card-accent);
   color: var(--white);
 }
-.tag.sample { background: var(--calamansi); color: var(--ink); }
+.tag.sample { background: var(--babyblue); color: var(--darkbrown); }
 
 .card h3 {
   margin: 0;
@@ -225,13 +225,13 @@ body.no-scroll { overflow: hidden; }
   min-height: 44px;
   border: 0;
   border-radius: 10px;
-  background: var(--ink);
+  background: var(--darkbrown);
   color: var(--white);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
-.btn:hover { background: var(--ube); }
+.btn:hover { background: var(--brown); }
 
 .empty {
   padding: 2rem 0 3rem;
@@ -253,7 +253,7 @@ body.no-scroll { overflow: hidden; }
   max-height: 92dvh;             /* dvh = accounts for the phone's browser bar */
   overflow-y: auto;              /* scroll inside the pop-up if the menu is long */
   background: var(--white);
-  color: var(--ink);
+  color: var(--darkbrown);
   /* On phones: slide up from the bottom like a sheet */
   margin: auto auto 0;
   border-radius: 20px 20px 0 0;
@@ -293,12 +293,12 @@ body.no-scroll { overflow: hidden; }
   border: 1.5px solid var(--line);
   border-radius: 999px;
   background: var(--white);
-  color: var(--ink);
+  color: var(--darkbrown);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
 }
-.close-btn:hover { border-color: var(--ink); }
+.close-btn:hover { border-color: var(--darkbrown); }
 
 #menu-content { padding: 1rem 1.25rem 2rem; }
 
@@ -309,7 +309,7 @@ body.no-scroll { overflow: hidden; }
   margin: 1.5rem 0 0.5rem;
   font-family: var(--font-display);
   font-size: 1.25rem;
-  color: var(--ube);
+  color: var(--brown);
 }
 
 .menu-items { list-style: none; margin: 0; padding: 0; }

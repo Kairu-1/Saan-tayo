@@ -22,6 +22,61 @@ const TYPE_LABELS = {
 };
 
 
+/* ---------- 1b. DATABASE CONNECTION (Supabase) ----------
+   The URL and publishable key are SAFE to be public: the database rules
+   (Row Level Security) only allow people to READ menus.
+   NEVER paste the "secret" key into this file. */
+const SUPABASE_URL = "https://uaqzqotirikxzuebdfne.supabase.co";
+const SUPABASE_KEY = "sb_publishable_-8g6F5S2YExB8W2bFWQyFw_3GNvuinP";
+
+// The Supabase library (loaded in index.html) gives us a global "supabase".
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// PLACES used to be a ready-made list in data.js. Now it starts empty
+// and loadPlaces() fills it from the database (see section 8 below).
+let PLACES = [];
+
+// Asks Supabase for every place, with its categories and dishes nested inside,
+// then reshapes the answer to look EXACTLY like the old data.js format.
+// That's why the rest of this file barely changed.
+async function loadPlaces() {
+  const { data, error } = await db
+    .from("places")
+    .select(`
+      id, slug, name, type, city, area, hours, description, updated, is_sample,
+      menu_categories (
+        id, name, sort_order,
+        menu_items ( id, name, price, note, sort_order )
+      )
+    `)
+    .order("name");
+
+  if (error) throw error;
+
+  const bySortOrder = (a, b) => a.sort_order - b.sort_order;
+
+  return data.map((place) => ({
+    id: place.slug,                 // the old "id" is now the "slug" column
+    name: place.name,
+    type: place.type,
+    city: place.city,
+    area: place.area,
+    hours: place.hours || "",
+    description: place.description || "",
+    updated: place.updated || "",
+    isSample: place.is_sample,
+    menu: [...place.menu_categories].sort(bySortOrder).map((cat) => ({
+      category: cat.name,
+      items: [...cat.menu_items].sort(bySortOrder).map((item) => ({
+        name: item.name,
+        price: Number(item.price),
+        note: item.note || ""
+      }))
+    }))
+  }));
+}
+
+
 /* ---------- 2. STATE ----------
    "State" = what the visitor has currently chosen.
    Whenever it changes, we call render() to redraw the page. */
@@ -238,8 +293,22 @@ dialog.addEventListener("close", () => {
 
 
 /* ---------- 8. START ----------
-   Draw the page for the first time. */
-render();
+   Fetch the places from Supabase, THEN draw the page for the first time.
+   Fetching takes a moment, so we show "Loading..." while we wait. */
+resultCount.textContent = "Loading places...";
+
+loadPlaces()
+  .then((places) => {
+    PLACES = places;
+    render();
+  })
+  .catch((error) => {
+    // Open DevTools (F12) > Console to see the technical details.
+    console.error("Could not load places:", error);
+    resultCount.textContent = "";
+    emptyMsg.textContent = "Couldn't load the menus right now. Please refresh and try again.";
+    emptyMsg.hidden = false;
+  });
 
 
 /* =====================================================================
